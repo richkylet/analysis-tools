@@ -7,4 +7,4 @@ I've generalized some of this to serve as examples rather than for the specific 
 
 Brief descriptions:
 --------------------
-  * #fft_example.py#: simple example of conducting a qunatitative, fast Fourier transform of a time-domain signal. (requires matplotlib, numpy and math)  
+  * ##fft_example.py##: simple example of conducting a qunatitative, fast Fourier transform of a time-domain signal. (requires matplotlib, numpy and math)  
