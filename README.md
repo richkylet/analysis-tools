@@ -8,5 +8,4 @@ I've generalized some of this to serve as examples rather than for the specific 
 Brief descriptions:
 --------------------
   * signalProcessingExamples.py: simple examples of conducting a qunatitative, 1D, fast Fourier transform (FFT) of a continuous time-domain signal. Additionally are shown general methods for calculating power spectrum density (PSD) of the same signal using the periodogram or Welch's methods. (uses matplotlib, numpy, scipy, and math)  
-
- * imageProcessingExamples.py: basic examples for image processing and filtering (spline, convolved, guassian). (uses matplotlib, numpy, and scipy)  
+  * imageProcessingExamples.py: basic examples for image processing and filtering (spline, convolved, guassian). (uses matplotlib, numpy, and scipy)  
