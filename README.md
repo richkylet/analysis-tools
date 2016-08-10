@@ -12,7 +12,7 @@ Brief Descriptions
 * `imageProcessingExamples.py`: basic examples for image processing and filtering (spline, convolved, guassian). (uses matplotlib, numpy, and scipy)  
 
 
-software licensed under the MIT License
+Software licensed under the MIT License
 ------------
 Copyright (c) 2016 Kyle T. Rich
 
