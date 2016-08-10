@@ -1,9 +1,9 @@
 
 analysis-tools
---------------------
+==================
 This is a collection of a few python scripts I have written and used during my PhD. 
 
-I've generalized some of this to serve as examples rather than for the specific problems they were written to address. I'm not sure how useful these will be to others, but feel use/dstribute. 
+I've generalized some of this to serve as examples rather than for the specific problems they were written to address. I'm not sure how useful these will be to others, but feel free to use/dstribute. 
 
 Brief Descriptions
 ==================
