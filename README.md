@@ -3,7 +3,7 @@ analysis-tools
 ==================
 This is a collection of a few very basic python scripts I used during my PhD. 
 
-I've generalized some of this to serve as examples rather than for the specific problems they were written to address. I'm not sure how useful these will be to others, but feel free to use/dstribute. 
+I've generalized some of this to serve as examples rather than for the specific problems they were written to address. I'm not sure how useful these will be to others, but feel these would be a good starting point for others looking to use Python for data analysis and see some example implementations. 
 
 Brief Descriptions
 ==================
