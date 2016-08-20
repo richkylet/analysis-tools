@@ -20,7 +20,6 @@ domain signal.
 KTR 2016
 
 '''
-
 #===========================================================
 import matplotlib.pyplot as plt
 import scipy.signal as signal
@@ -29,136 +28,119 @@ import math
 
 plt.close("all")
 
-#=====  calculate next power of 2 of a number x ================
 def nextpow2(x):
     ''' 
     calculate the next power of 2 of x
     '''
     return (x-1).bit_length()
+
+def time_signal(f0, amp,t):
+    '''
+    calculate time domain signal w\ and w\o noise
+    '''
+    # non noisey sigal y 
+    y = amp*np.sin(2 * np.pi * f0 * t) # fundamental component
+    y = amp/2*np.sin(2 * np.pi * f0/2 * t) + y # subharmonic component
+    # add noise to signal ynoise
+    noise = np.random.normal(0,.01,len(t))
+    ynoise = y + noise
+    # plot signal
+    fig = plt.figure(1)
+    plt.subplot(2,2,1)
+    plt.plot(t, y,'b-',linewidth=1.2)
+    plt.plot(t, ynoise,'r--',linewidth=1.2)
+    plt.xlabel('time')
+    plt.ylabel('amp')
+    plt.title('Time-domain signal')
+    plt.grid()
+    plt.show()
+    return y, ynoise
     
-#===== time series (signal)       ================
-'''
-Generate some time-domain signal
-'''
-# parameters & vars---
-Fs    = 200               # [Hz] sampling freq
-L     = 2000                # len of signal
-dt    = 1/float(Fs)       # time step
-Nzero = 2**nextpow2(L) # zero pad length
-time  = np.arange(0,L)*float(dt)  # time array
-freq  = np.linspace(0,Fs,L) # freq vec for non-zero pad signal
-freqn = np.linspace(0,Fs,Nzero)# freq vec for zero pad signal
-df = freq[1]-freq[0] # step size freq, bin width
-dfn = freqn[1]-freqn[0]# step size zero pad len, bin width
+def freq_spec(y,ynoise,t,Fs):
+    '''
+    Calculate fft/freqeuncy spectrum
+    '''
+    freq  = np.linspace(0,Fs,len(t)) # freq vec for non-zero pad signal
+    freqn = np.linspace(0,Fs, 2**nextpow2(len(ynoise)))
+    # fft of non-noisey signal
+    Y = np.fft.fft(y) # fft of y (non-noisey signal)
+    Y = np.abs(Y)**2 # 
+    Y = (Y/max(Y))# normalize and log scale
+    # fft of noisey signal
+    Y2 = np.fft.fft(ynoise,2**nextpow2(len(ynoise))) # fft with zero padding to length Nzero
+    Y2 = np.abs(Y2) 
+    Y2 = Y2/max(Y2) # normalize and log scale
+    # plot --------------------
+    fig = plt.figure(1)
+    plt.subplot(2,2,2)
+    plt.plot(freq, Y, 'b-')
+    plt.plot(freqn, Y2, 'r--',linewidth=1.2)
+    plt.ylabel('Amplitude (norm)')
+    plt.xlabel('frequency (Hz)')
+    plt.title('Frequency Spectrum')
+    plt.grid()
+    plt.show()
+    plt.xlim([0,Fs/2])
+    
+def periodogram_spec(y, ynoise, Fs):
+    '''
+    calculate PSD using method of periodograms
+    '''
+    # signal w\o noise
+    f, Pper_spec = signal.periodogram(y, Fs, 'flattop', scaling='spectrum')
+    Pper_spec = Pper_spec/max(Pper_spec) # normalize re max
+    # signal w\ noise
+    f, Pper_spec2 = signal.periodogram(ynoise, Fs, 'flattop', scaling='spectrum')
+    Pper_spec2 = Pper_spec2/max(Pper_spec2) # normalize re max
+    # plot ------------
+    fig = plt.figure(1)
+    plt.subplot(2,2,3)
+    plt.semilogy(f, Pper_spec,'b-')
+    plt.semilogy(f, Pper_spec2,'r-',linewidth=1.2)
+    plt.xlabel('frequency [Hz]')
+    plt.ylabel('PSD')
+    plt.grid()
+    plt.show()
+    plt.title('Method of periodograms')
+def Welch_spec(y, ynoise, Fs):
+    '''
+    calculate PSD using Welchs method 
+    '''
+    # signal w\ noise
+    f, Pwelch_spec2 = signal.welch(ynoise, Fs, scaling='spectrum')
+    Pwelch_spec2 = Pwelch_spec2/max(Pwelch_spec2)
+    # signal w\o noise
+    f, Pwelch_spec = signal.welch(y, Fs, scaling='spectrum')
+    Pwelch_spec = Pwelch_spec/max(Pwelch_spec)
+    # plot
+    fig = plt.figure(1)
+    plt.subplot(2,2,4)
+    plt.semilogy(f, Pwelch_spec2/max(Pwelch_spec2),'r-',linewidth=1.2)
+    plt.semilogy(f, Pwelch_spec/max(Pwelch_spec)  ,'b-')
+    plt.xlabel('frequency [Hz]')
+    plt.ylabel('PSD')
+    plt.title('Welchs method ')
+    plt.grid()
+    plt.show()
 
-# signal characteristics---
-f1 = 24     # fundamental signal
-a1 = 10      # fundamental amplitude
-f2 = float(f1)/2 # subharmonic signal
-a2 = float(a1)/2 # subharmonic amplitude
+def PSDexample():
+    '''
+    main
+    '''
+    f0 = float(input('Enter center frequency (f0): '))
+    amp = float(input('Enter amplitude of f0: '))        
+    # paramters
+    Fs = 10*f0 # make sure we dont alias
+    t = np.arange(0,float(10*f0/2),float(1/Fs))
 
-# signal y ---
-y = a1*np.sin(2 * np.pi * f1 * time) + a2*np.sin(2 * np.pi * f2 * time) 
-
-# add zero mean noise to signal---
-noise = np.random.normal(0,2,L)
-y2 = y+noise
-
-#plot our non-noisey & noisey time-domain signal
-fig = plt.figure(1)
-plt.subplot(2,2,1)
-plt.plot(time, y,'b-') # signal w\ noise
-plt.plot(time, y2,'r--',linewidth=1.2) # signal w\o noise
-plt.ylabel('Amplitude')
-plt.xlabel('time (seconds)')
-plt.title('Time-domain signal')
-plt.grid()
-plt.show()
-plt.xlim([0,time[round(L/10)] ])
-
-
-#------------------------------------------
-'''
-Methods for estimating the power spectral density of a given signal (w\ and w\o 
-zero-sum added noise).
----------------------------------------------------------------
-'''
-#------------------------------------------
-#===== 1-D FTT (Power spectrum) ================
-'''
-Calculate power spectrum using fft (numpy.fft.fft(array,[zeropad_len,axis,norm]))
-'''
-# fft of non-noisey signal
-Y = np.fft.fft(y) # fft of y (non-noisey signal)
-Y = np.abs(Y)**2 # 
-Y = (Y/max(Y))# normalize and log scale
-
-
-# fft of noisey signal
-Y2 = np.fft.fft(y2,Nzero) # fft with zero padding to length Nzero
-Y2 = np.abs(Y2) 
-Y2 = Y2/max(Y2) # normalize and log scale
-# plot --------------------
-fig = plt.figure(1)
-plt.subplot(2,2,2)
-plt.plot(freq, Y, 'b-')
-plt.plot(freqn,Y2, 'r-',linewidth=1.2)
-plt.ylabel('Amplitude (norm)')
-plt.xlabel('frequency (Hz)')
-plt.title('Frequency Spectrum')
-plt.grid()
-plt.show()
-plt.xlim([0,f1*2])
-
-
-
-#------------------------------------------
-#==== method of periodograms (PSD estimation) ================
-'''
-Calculate power spectral density using the method of periodograms, compare with 
-periodogram method and noisey vs. non-noisey signal:
-'''
-fig = plt.figure(1)
-plt.subplot(2,2,3)
-# signal w\o noise
-f, Pper_spec = signal.periodogram(y, Fs, 'flattop', scaling='spectrum')
-Pper_spec = Pper_spec/max(Pper_spec) # normalize re max
-
-# signal w\ noise
-f, Pper_spec2 = signal.periodogram(y2, Fs, 'flattop', scaling='spectrum')
-Pper_spec2 = Pper_spec2/max(Pper_spec2) # normalize re max
-
-# plot ------------
-plt.semilogy(f, Pper_spec,'b-')
-plt.semilogy(f, Pper_spec2,'r-',linewidth=1.2)
-plt.xlabel('frequency [Hz]')
-plt.ylabel('PSD')
-plt.grid()
-plt.show()
-plt.title('Method of periodograms')
-plt.xlim([0,f1*2])
-
-#------------------------------------------
-#==== Welch's method       ================
-'''
-Calculate power spectral density using Welch's method, compare with 
-periodogram method and noisey vs. non-noisey signal
-'''
-# signal w\ noise
-f, Pwelch_spec2 = signal.welch(y2, Fs, scaling='spectrum')
-Pwelch_spec2 = Pwelch_spec2/max(Pwelch_spec2)
-
-# signal w\o noise
-f, Pwelch_spec = signal.welch(y, Fs, scaling='spectrum')
-Pwelch_spec = Pwelch_spec/max(Pwelch_spec)
-# plot
-fig = plt.figure(1)
-plt.subplot(2,2,4)
-plt.semilogy(f, Pwelch_spec2/max(Pwelch_spec2),'r-',linewidth=1.2)
-plt.semilogy(f, Pwelch_spec/max(Pwelch_spec)  ,'b-')
-plt.xlabel('frequency [Hz]')
-plt.ylabel('PSD')
-plt.title('Welchs method ')
-plt.grid()
-plt.show()
-plt.xlim([0,f1*2])
+    # make signal
+    y, ynoise = time_signal(f0, amp,t) 
+    # take FFT
+    freq_spec(y,ynoise,t,Fs)
+    # method of periodogram
+    periodogram_spec(y, ynoise, Fs)
+    # welchs method
+    Welch_spec(y, ynoise, Fs)
+    
+    
+PSDexample()
