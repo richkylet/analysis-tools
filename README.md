@@ -7,10 +7,11 @@ I've generalized some of this to serve as examples rather than for the specific 
 
 Brief Descriptions
 ==================
-* `PSDestimation.py`:  General methods for calculating power spectrum density (PSD) of a signal using the periodogram or Welch's methods. (uses matplotlib, numpy, scipy, and math)  
+* `PSDestimation.py`:  General methods for calculating power spectrum density (PSD) of a signal using the periodogram or Welch's methods. (Python using matplotlib, numpy, scipy, and math)  
   
-* `imageProcessingExamples.py`: basic examples for image processing and filtering (spline, convolved, guassian). (uses matplotlib, numpy, and scipy)  
+* `imageProcessingExamples.py`: basic Python examples for image processing and filtering (spline, convolved, guassian). (Python using matplotlib, numpy, and scipy)  
 
+* 'MWE_overlayColormap.m`: a minimal working MATLAB example for plotting overlapping colormaps
 
 Software licensed under the MIT License
 ------------
