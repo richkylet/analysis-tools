@@ -13,6 +13,8 @@ Brief Descriptions
 
 * 'MWE_overlayColormap.m`: a minimal working MATLAB example for plotting overlapping colormaps
 
+* 'test2.rmd'* can be found [here](http://htmlpreview.github.io/?https://raw.githubusercontent.com/richkylet/analysis-tools/gh-pages/test.nb.html) 
+
 Software licensed under the MIT License
 ------------
 Copyright (c) 2016 Kyle T. Rich
